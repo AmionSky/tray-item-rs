@@ -1,6 +1,6 @@
 use {
-    crate::TIError,
     crate::IconSource,
+    crate::TIError,
     callback::*,
     cocoa::{
         appkit::{

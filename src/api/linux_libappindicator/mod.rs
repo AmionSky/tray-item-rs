@@ -1,5 +1,5 @@
 use {
-    crate::{TIError, IconSource},
+    crate::{IconSource, TIError},
     gtk::prelude::*,
     libappindicator::{AppIndicator, AppIndicatorStatus},
 };
