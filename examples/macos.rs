@@ -1,6 +1,6 @@
-use tray_item::{TrayItem, IconSource};
-
+#[cfg(target_os = "macos")]
 fn main() {
+    use tray_item::{TrayItem, IconSource};
 
     let mut tray = TrayItem::new("Tray Example", IconSource::Resource("")).unwrap();
 
@@ -15,3 +15,6 @@ fn main() {
     inner.display();
 
 }
+
+#[cfg(not(target_os = "macos"))]
+fn main() {}
