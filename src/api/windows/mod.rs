@@ -44,7 +44,7 @@ pub struct TrayItemWindows {
 
 impl TrayItemWindows {
     pub fn new(title: &str, icon: IconSource) -> Result<Self, TIError> {
-        let entries = Arc::new(Mutex::new(Vec::new()));
+        let entries = Arc::new(Mutex::new(Vec::<CallBackEntry>::new()));
         let (event_tx, event_rx) = channel::<WindowsTrayEvent>();
 
         let entries_clone = Arc::clone(&entries);
@@ -54,12 +54,12 @@ impl TrayItemWindows {
                     break;
                 }
 
-                padlock::mutex_lock(&entries_clone, |ents: &mut Vec<CallBackEntry>| match &ents
-                    [v.0 as usize]
-                {
-                    Some(f) => f(),
-                    None => (),
-                })
+                if let Ok(ents) = entries_clone.lock() {
+                    match &ents[v.0 as usize] {
+                        Some(f) => f(),
+                        None => (),
+                    }
+                }
             }
         });
 
@@ -120,11 +120,12 @@ impl TrayItemWindows {
     }
 
     pub fn add_label_with_id(&mut self, label: &str) -> Result<u32, TIError> {
-        let item_idx = padlock::mutex_lock(&self.entries, |entries| {
+        let item_idx = {
+            let mut entries = self.entries.lock().unwrap();
             let len = entries.len();
             entries.push(None);
             len
-        }) as u32;
+        } as u32;
 
         let mut st = to_wstring(label);
         let mut item = unsafe { mem::zeroed::<MENUITEMINFOW>() };
@@ -176,11 +177,12 @@ impl TrayItemWindows {
     where
         F: Fn() + Send + 'static,
     {
-        let item_idx = padlock::mutex_lock(&self.entries, |entries| {
+        let item_idx = {
+            let mut entries = self.entries.lock().unwrap();
             let len = entries.len();
             entries.push(Some(Box::new(cb)));
             len
-        }) as u32;
+        } as u32;
 
         let mut st = to_wstring(label);
         let mut item = unsafe { mem::zeroed::<MENUITEMINFOW>() };
@@ -223,11 +225,12 @@ impl TrayItemWindows {
     }
 
     pub fn add_separator_with_id(&mut self) -> Result<u32, TIError> {
-        let item_idx = padlock::mutex_lock(&self.entries, |entries| {
+        let item_idx = {
+            let mut entries = self.entries.lock().unwrap();
             let len = entries.len();
             entries.push(None);
             len
-        }) as u32;
+        } as u32;
 
         let mut item = unsafe { mem::zeroed::<MENUITEMINFOW>() };
         item.cbSize = mem::size_of::<MENUITEMINFOW>() as u32;
