@@ -22,7 +22,7 @@ use {super::*, crate::TIError};
 pub(crate) fn to_wstring(str: &str) -> Vec<u16> {
     OsStr::new(str)
         .encode_wide()
-        .chain(Some(0).into_iter())
+        .chain(Some(0))
         .collect::<Vec<_>>()
 }
 

@@ -2,7 +2,7 @@
 name = "tray-item"
 version = "0.8.0"
 authors = ["Edwin Svensson <trayitemrs@olback.net>"]
-edition = "2018"
+edition = "2021"
 description = "Super simple API to make tray icons/menus on Windows, Mac & Linux"
 homepage = "https://github.com/olback/tray-item-rs"
 repository = "https://github.com/olback/tray-item-rs"
